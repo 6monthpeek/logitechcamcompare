@@ -1,0 +1,235 @@
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #121214;
+  color: #e4e4e7;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* App layout */
+#app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Header */
+.app-header {
+  height: 48px;
+  background-color: #1a1a1e;
+  border-bottom: 1px solid #2d2d34;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.status-bar {
+  color: #a1a1aa;
+  font-size: 12px;
+}
+
+/* Viewport / Canvas */
+.viewport {
+  flex: 1;
+  background-color: #09090b;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+#canvas-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: grid;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+/* Layout classes */
+.preset-side-by-side {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+}
+
+.preset-stacked {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+/* PiP layout */
+.preset-pip {
+  position: relative;
+  display: block;
+}
+
+.preset-pip #camera-slot-a {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.preset-pip #camera-slot-b {
+  width: 25%;
+  height: 25%;
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 10;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  border-color: #3b82f6;
+}
+
+/* Camera Slots */
+.camera-slot {
+  background-color: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.slot-header {
+  background-color: #202024;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-bottom: 1px solid #27272a;
+  color: #d4d4d8;
+}
+
+.video-wrapper {
+  flex: 1;
+  position: relative;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Diagnostic Overlay */
+.diagnostic-overlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.badge {
+  background-color: rgba(9, 9, 11, 0.75);
+  color: #38bdf8;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.badge-res {
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.2);
+}
+
+/* Control Panel */
+.control-panel {
+  background-color: #1c1c20;
+  border-top: 1px solid #2d2d34;
+  padding: 16px;
+  display: flex;
+  gap: 24px;
+  height: 160px;
+}
+
+.control-group {
+  flex: 1;
+  background-color: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: auto;
+}
+
+.control-group h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #a1a1aa;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.control-group label {
+  font-size: 11px;
+  color: #d4d4d8;
+}
+
+.control-group select {
+  background-color: #27272a;
+  color: #f4f4f5;
+  border: 1px solid #3f3f46;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  outline: none;
+}
+
+.control-group select:focus {
+  border-color: #3b82f6;
+}
+
+/* Buttons */
+.preset-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.preset-buttons button {
+  flex: 1;
+  background-color: #27272a;
+  color: #e4e4e7;
+  border: 1px solid #3f3f46;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.preset-buttons button:hover {
+  background-color: #3f3f46;
+}
+
+.preset-buttons button.active {
+  background-color: #2563eb;
+  border-color: #3b82f6;
+  color: #fff;
+}

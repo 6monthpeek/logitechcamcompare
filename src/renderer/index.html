@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webcam Comparison App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app-container">
+    <header class="app-header">
+      <div class="logo">CamCompare</div>
+      <div class="status-bar">Status: Ready</div>
+    </header>
+
+    <main class="viewport">
+      <div id="canvas-container" class="preset-side-by-side">
+        <!-- Camera Slot A -->
+        <div id="camera-slot-a" class="camera-slot">
+          <div class="slot-header">Camera A</div>
+          <div class="video-wrapper">
+            <video id="video-a" autoplay playsinline muted></video>
+            <div class="diagnostic-overlay">
+              <span class="badge badge-fps">FPS: --</span>
+              <span class="badge badge-res">Res: --</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Camera Slot B -->
+        <div id="camera-slot-b" class="camera-slot">
+          <div class="slot-header">Camera B</div>
+          <div class="video-wrapper">
+            <video id="video-b" autoplay playsinline muted></video>
+            <div class="diagnostic-overlay">
+              <span class="badge badge-fps">FPS: --</span>
+              <span class="badge badge-res">Res: --</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="control-panel">
+      <div class="control-group">
+        <h3>Camera A Settings</h3>
+        <label for="camera-select-a">Device:</label>
+        <select id="camera-select-a">
+          <option value="">Select Camera...</option>
+        </select>
+        <label for="res-select-a">Preset Resolution:</label>
+        <select id="res-select-a">
+          <option value="1280x720">720p (1280x720)</option>
+          <option value="1920x1080">1080p (1920x1080)</option>
+          <option value="640x480">480p (640x480)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <h3>Camera B Settings</h3>
+        <label for="camera-select-b">Device:</label>
+        <select id="camera-select-b">
+          <option value="">Select Camera...</option>
+        </select>
+        <label for="res-select-b">Preset Resolution:</label>
+        <select id="res-select-b">
+          <option value="1280x720">720p (1280x720)</option>
+          <option value="1920x1080">1080p (1920x1080)</option>
+          <option value="640x480">480p (640x480)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <h3>Layout Presets</h3>
+        <div class="preset-buttons">
+          <button id="btn-side-by-side" class="active">Side-by-Side</button>
+          <button id="btn-stacked">Stacked</button>
+          <button id="btn-pip">PiP</button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

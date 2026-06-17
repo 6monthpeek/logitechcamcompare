@@ -1,0 +1,19 @@
+{
+  "name": "webcam-comparison-app",
+  "version": "1.0.0",
+  "description": "Webcam comparison application",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "vitest run",
+    "verify:launch": "node scripts/verify-launch.js",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "electron": "42.4.1",
+    "jsdom": "29.1.1",
+    "vitest": "4.1.9",
+    "@playwright/test": "^1.44.0",
+    "playwright": "^1.44.0"
+  }
+}
