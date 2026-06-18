@@ -71,6 +71,7 @@ class MainWindow(QMainWindow):
         self.control_panel.camera_toggle_requested.connect(self.toggle_camera)
         self.control_panel.camera_settings_changed.connect(self.update_camera_settings)
         self.control_panel.reset_layout_requested.connect(self.canvas.reset_layout)
+        self.control_panel.open_system_settings_requested.connect(self.open_system_settings)
         
         # Connect overlay checkbox signals
         self.control_panel.check_overlay_fps.toggled.connect(self.update_overlays)
@@ -125,6 +126,13 @@ class MainWindow(QMainWindow):
     def on_zoom_changed(self, cam_id, val):
         cam_widget = self.canvas.camera_a if cam_id == "A" else self.canvas.camera_b
         cam_widget.set_zoom(val)
+        
+    @Slot(str)
+    def open_system_settings(self, cam_id):
+        grabber = self.grabbers[cam_id]
+        if grabber is not None and grabber.isRunning():
+            import cv2
+            grabber.set_property(cv2.CAP_PROP_SETTINGS, 1)
 
     @Slot(str, int, int, int, int)
     def update_camera_settings(self, cam_id, device_idx, width, height, fps):
@@ -201,6 +209,8 @@ class MainWindow(QMainWindow):
             btn.setProperty("active", False)
             btn.style().unpolish(btn)
             btn.style().polish(btn)
+            sys_btn = getattr(self.control_panel, f"cam_{cid.lower()}_sys_btn")
+            sys_btn.setEnabled(False)
             
         grabber.error.connect(handle_error)
         

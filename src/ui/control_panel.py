@@ -16,6 +16,7 @@ class ControlPanel(QWidget):
     brightness_changed = Signal(str, int)
     contrast_changed = Signal(str, int)
     zoom_changed = Signal(str, float)
+    open_system_settings_requested = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -94,9 +95,11 @@ class ControlPanel(QWidget):
         
         # Resolution Selection
         res_combo = QComboBox()
-        res_combo.addItem("640 x 480", (640, 480))
-        res_combo.addItem("1280 x 720", (1280, 720))
-        res_combo.addItem("1920 x 1080", (1920, 1080))
+        res_combo.addItem("640 x 480 (480p)", (640, 480))
+        res_combo.addItem("1280 x 720 (720p)", (1280, 720))
+        res_combo.addItem("1920 x 1080 (1080p)", (1920, 1080))
+        res_combo.addItem("2560 x 1440 (2K)", (2560, 1440))
+        res_combo.addItem("3840 x 2160 (4K)", (3840, 2160))
         form.addRow("Resolution:", res_combo)
         
         # FPS Selection
@@ -132,11 +135,19 @@ class ControlPanel(QWidget):
         toggle_btn.clicked.connect(lambda checked: self.on_camera_toggle(cam_id, checked))
         layout.addWidget(toggle_btn)
         
+        # Configure Video (System) Button
+        sys_btn = QPushButton("Video Yapılandır (Sistem)")
+        sys_btn.setObjectName(f"cam_{cam_id.lower()}_sys_btn")
+        sys_btn.setEnabled(False) # Enabled only when camera is active
+        sys_btn.clicked.connect(lambda: self.open_system_settings_requested.emit(cam_id))
+        layout.addWidget(sys_btn)
+        
         # Save attributes dynamically
         setattr(self, f"cam_{cam_id.lower()}_dev_combo", dev_combo)
         setattr(self, f"cam_{cam_id.lower()}_res_combo", res_combo)
         setattr(self, f"cam_{cam_id.lower()}_fps_spin", fps_spin)
         setattr(self, f"cam_{cam_id.lower()}_toggle_btn", toggle_btn)
+        setattr(self, f"cam_{cam_id.lower()}_sys_btn", sys_btn)
         
         setattr(self, f"slider_brightness_{cam_id.lower()}", slider_brightness)
         setattr(self, f"slider_contrast_{cam_id.lower()}", slider_contrast)
@@ -163,13 +174,16 @@ class ControlPanel(QWidget):
 
     def on_camera_toggle(self, cam_id, checked):
         btn = getattr(self, f"cam_{cam_id.lower()}_toggle_btn")
+        sys_btn = getattr(self, f"cam_{cam_id.lower()}_sys_btn")
         if checked:
             btn.setText(f"Stop Camera {cam_id}")
             btn.setProperty("active", True)
+            sys_btn.setEnabled(True)
             self.camera_toggle_requested.emit(cam_id, True)
         else:
             btn.setText(f"Start Camera {cam_id}")
             btn.setProperty("active", False)
+            sys_btn.setEnabled(False)
             self.camera_toggle_requested.emit(cam_id, False)
         btn.style().unpolish(btn)
         btn.style().polish(btn)

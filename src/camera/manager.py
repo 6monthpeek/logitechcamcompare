@@ -31,8 +31,20 @@ class CameraManager:
                 return devices
         
         # Fallback to cv2 VideoCapture discovery
+        import platform
         for index in range(10):
-            cap = cv2.VideoCapture(index)
+            try:
+                if platform.system() == "Windows":
+                    cap = cv2.VideoCapture(index, cv2.CAP_DSHOW)
+                else:
+                    cap = cv2.VideoCapture(index)
+            except TypeError:
+                cap = cv2.VideoCapture(index)
+            if not cap.isOpened() and platform.system() == "Windows":
+                try:
+                    cap = cv2.VideoCapture(index) # Fallback to default
+                except TypeError:
+                    pass
             if cap.isOpened():
                 cap.release()
                 caps = CameraManager.check_capabilities(index)
@@ -64,8 +76,20 @@ class CameraManager:
         if not (-2**31 <= device_index < 2**31):
             return capabilities
                 
+        import platform
         try:
-            cap = cv2.VideoCapture(device_index)
+            try:
+                if platform.system() == "Windows":
+                    cap = cv2.VideoCapture(device_index, cv2.CAP_DSHOW)
+                else:
+                    cap = cv2.VideoCapture(device_index)
+            except TypeError:
+                cap = cv2.VideoCapture(device_index)
+            if not cap.isOpened() and platform.system() == "Windows":
+                try:
+                    cap = cv2.VideoCapture(device_index)
+                except TypeError:
+                    pass
         except (cv2.error, TypeError, OverflowError, ValueError, Exception):
             return capabilities
             
@@ -76,6 +100,7 @@ class CameraManager:
             (640, 480),
             (1280, 720),
             (1920, 1080),
+            (2560, 1440),
             (3840, 2160)
         ]
         

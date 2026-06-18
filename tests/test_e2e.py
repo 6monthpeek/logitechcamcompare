@@ -674,8 +674,8 @@ def test_tier3_high_resolution_high_fps_both_cameras(qtbot):
     qtbot.waitUntil(lambda: window.grabbers["A"] is not None and window.grabbers["A"].running, timeout=2000)
     qtbot.waitUntil(lambda: window.grabbers["B"] is not None and window.grabbers["B"].running, timeout=2000)
     
-    window.control_panel.cam_a_res_combo.setCurrentText("1920 x 1080")
-    window.control_panel.cam_b_res_combo.setCurrentText("1920 x 1080")
+    window.control_panel.cam_a_res_combo.setCurrentText("1920 x 1080 (1080p)")
+    window.control_panel.cam_b_res_combo.setCurrentText("1920 x 1080 (1080p)")
     
     window.control_panel.cam_a_fps_spin.setValue(60)
     window.control_panel.cam_b_fps_spin.setValue(60)

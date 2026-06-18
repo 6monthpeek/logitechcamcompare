@@ -79,11 +79,29 @@ class CameraGrabber(QThread):
         return (self.active_width, self.active_height, self.current_fps)
         
     def run(self):
-        self.cap = cv2.VideoCapture(self.index)
+        import platform
+        try:
+            if platform.system() == "Windows":
+                self.cap = cv2.VideoCapture(self.index, cv2.CAP_DSHOW)
+            else:
+                self.cap = cv2.VideoCapture(self.index)
+        except TypeError:
+            self.cap = cv2.VideoCapture(self.index)
+            
+        if not self.cap.isOpened():
+            # Fallback to default backend
+            self.cap = cv2.VideoCapture(self.index)
+            
         if not self.cap.isOpened():
             self.error.emit(f"Failed to open camera index {self.index}")
             self.running = False
             return
+            
+        # Try to negotiate MJPG format to unlock high frame rates and high resolutions
+        try:
+            self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
+        except Exception:
+            pass
             
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
@@ -109,6 +127,12 @@ class CameraGrabber(QThread):
                     self._pending_properties.clear()
             
             if props_to_apply:
+                # If changing resolution, make sure FOURCC is MJPG before applying width/height
+                if cv2.CAP_PROP_FRAME_WIDTH in props_to_apply or cv2.CAP_PROP_FRAME_HEIGHT in props_to_apply:
+                    try:
+                        self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
+                    except Exception:
+                        pass
                 for prop_id, value in props_to_apply.items():
                     self.cap.set(prop_id, value)
                     if prop_id == cv2.CAP_PROP_FRAME_WIDTH:
