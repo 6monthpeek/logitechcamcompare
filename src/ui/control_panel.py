@@ -26,75 +26,6 @@ class ControlPanel(QWidget):
         self.slider_zoom_a = None
         self.slider_zoom_b = None
         self.setMaximumWidth(320)
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #1a1a1e;
-                color: #e0e0e0;
-                font-family: 'Segoe UI', Arial, sans-serif;
-            }
-            QGroupBox {
-                border: 1px solid #3d3d42;
-                border-radius: 6px;
-                margin-top: 12px;
-                font-weight: bold;
-                padding-top: 8px;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 3px 0 3px;
-            }
-            QComboBox, QSpinBox {
-                background-color: #2b2b30;
-                border: 1px solid #4d4d54;
-                border-radius: 4px;
-                padding: 4px;
-                color: #e0e0e0;
-            }
-            QComboBox::drop-down {
-                border: none;
-            }
-            QPushButton {
-                background-color: #007acc;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 6px 12px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #1a8ad6;
-            }
-            QPushButton:pressed {
-                background-color: #005999;
-            }
-            QPushButton#refresh_btn {
-                background-color: #3a3a3f;
-            }
-            QPushButton#refresh_btn:hover {
-                background-color: #4a4a4f;
-            }
-            QCheckBox {
-                color: #e0e0e0;
-                spacing: 8px;
-                padding-top: 4px;
-                padding-bottom: 4px;
-            }
-            QCheckBox::indicator {
-                width: 14px;
-                height: 14px;
-                border: 1px solid #4d4d54;
-                border-radius: 3px;
-                background-color: #2b2b30;
-            }
-            QCheckBox::indicator:hover {
-                border-color: #007acc;
-            }
-            QCheckBox::indicator:checked {
-                background-color: #007acc;
-                border-color: #007acc;
-            }
-        """)
 
         # Main Layout
         self.main_layout = QVBoxLayout(self)
@@ -196,6 +127,7 @@ class ControlPanel(QWidget):
         
         # Start/Stop Button
         toggle_btn = QPushButton(f"Start Camera {cam_id}")
+        toggle_btn.setProperty("active", False)
         toggle_btn.setCheckable(True)
         toggle_btn.clicked.connect(lambda checked: self.on_camera_toggle(cam_id, checked))
         layout.addWidget(toggle_btn)
@@ -233,12 +165,14 @@ class ControlPanel(QWidget):
         btn = getattr(self, f"cam_{cam_id.lower()}_toggle_btn")
         if checked:
             btn.setText(f"Stop Camera {cam_id}")
-            btn.setStyleSheet("background-color: #d9534f;")
+            btn.setProperty("active", True)
             self.camera_toggle_requested.emit(cam_id, True)
         else:
             btn.setText(f"Start Camera {cam_id}")
-            btn.setStyleSheet("background-color: #007acc;")
+            btn.setProperty("active", False)
             self.camera_toggle_requested.emit(cam_id, False)
+        btn.style().unpolish(btn)
+        btn.style().polish(btn)
 
     def on_settings_modified(self, cam_id):
         # Only emit settings change if the camera is not active or needs updates

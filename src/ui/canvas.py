@@ -9,7 +9,6 @@ class SceneCanvas(QWidget):
     """
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setStyleSheet("background-color: #0d0d0f; border: 1px solid #2d2d30; border-radius: 4px;")
         
         # Dual camera widgets
         self.camera_a = CameraWidget(title="Camera A", parent=self)

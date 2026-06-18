@@ -1,0 +1,182 @@
+/* Logitech MX-inspired dark theme QSS stylesheet */
+
+QMainWindow {
+    background-color: #121214;
+}
+
+QSplitter::handle {
+    background-color: #2d2d30;
+}
+
+QSplitter::handle:horizontal {
+    width: 6px;
+}
+
+QSplitter::handle:vertical {
+    height: 6px;
+}
+
+QSplitter::handle:hover {
+    background-color: #00f0ff;
+}
+
+SceneCanvas {
+    background-color: #0d0d0f;
+    border: 1px solid #1e1e22;
+    border-radius: 8px;
+}
+
+CameraWidget {
+    background-color: #18181b;
+    border: 2px solid #2d2d30;
+    border-radius: 8px;
+}
+
+CameraWidget:hover, CameraWidget:focus {
+    border: 2px solid #00f0ff;
+}
+
+CameraWidget QLabel#placeholder_label {
+    background-color: #121214;
+    color: #a1a1aa;
+    font-size: 14px;
+    border: 2px dashed #2d2d30;
+    border-radius: 6px;
+}
+
+ControlPanel {
+    background-color: #18181b;
+    color: #f4f4f5;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+ControlPanel QLabel {
+    color: #a1a1aa;
+}
+
+ControlPanel QGroupBox {
+    border: 1px solid #2d2d30;
+    border-radius: 8px;
+    margin-top: 12px;
+    font-weight: bold;
+    color: #f4f4f5;
+    padding-top: 12px;
+    background-color: #18181b;
+}
+
+ControlPanel QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 3px 0 3px;
+    color: #f4f4f5;
+}
+
+ControlPanel QComboBox, ControlPanel QSpinBox {
+    background-color: #202023;
+    border: 1px solid #2d2d30;
+    border-radius: 4px;
+    padding: 4px;
+    color: #f4f4f5;
+}
+
+ControlPanel QComboBox:hover, ControlPanel QComboBox:focus,
+ControlPanel QSpinBox:hover, ControlPanel QSpinBox:focus {
+    border: 1px solid #00f0ff;
+}
+
+ControlPanel QComboBox::drop-down {
+    border: none;
+}
+
+ControlPanel QPushButton {
+    background-color: #202023;
+    color: #f4f4f5;
+    border: 1px solid #2d2d30;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+
+ControlPanel QPushButton:hover {
+    border-color: #00f0ff;
+    color: #00f0ff;
+}
+
+ControlPanel QPushButton:pressed {
+    background-color: #2d2d30;
+}
+
+/* Dynamic property for checkable camera toggle buttons */
+ControlPanel QPushButton[active="true"] {
+    background-color: #e11d48;
+    color: #f4f4f5;
+    border: 1px solid #e11d48;
+}
+
+ControlPanel QPushButton[active="true"]:hover {
+    background-color: #ff3b5c;
+    border-color: #ff3b5c;
+}
+
+ControlPanel QPushButton[active="false"] {
+    background-color: #202023;
+    color: #00f0ff;
+    border: 1px solid #00f0ff;
+}
+
+ControlPanel QPushButton[active="false"]:hover {
+    background-color: #00f0ff;
+    color: #121214;
+}
+
+/* Checkbox styling */
+ControlPanel QCheckBox {
+    color: #f4f4f5;
+    spacing: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+ControlPanel QCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #2d2d30;
+    border-radius: 3px;
+    background-color: #202023;
+}
+
+ControlPanel QCheckBox::indicator:hover {
+    border-color: #00f0ff;
+}
+
+ControlPanel QCheckBox::indicator:checked {
+    background-color: #00f0ff;
+    border-color: #00f0ff;
+}
+
+/* Slider styling */
+ControlPanel QSlider::groove:horizontal {
+    border: 1px solid #2d2d30;
+    height: 6px;
+    background: #202023;
+    border-radius: 3px;
+}
+
+ControlPanel QSlider::sub-page:horizontal {
+    background: #8b5cf6;
+    border-radius: 3px;
+}
+
+ControlPanel QSlider::handle:horizontal {
+    background: #f4f4f5;
+    border: 1px solid #2d2d30;
+    width: 14px;
+    height: 14px;
+    margin: -4px 0;
+    border-radius: 7px;
+}
+
+ControlPanel QSlider::handle:horizontal:hover {
+    background: #00f0ff;
+    border-color: #00f0ff;
+}

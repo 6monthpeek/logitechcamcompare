@@ -167,7 +167,9 @@ class MainWindow(QMainWindow):
             btn = getattr(self.control_panel, f"cam_{cam_id.lower()}_toggle_btn")
             btn.setChecked(False)
             btn.setText(f"Start Camera {cam_id}")
-            btn.setStyleSheet("background-color: #007acc;")
+            btn.setProperty("active", False)
+            btn.style().unpolish(btn)
+            btn.style().polish(btn)
             return
             
         self.stop_grabber(cam_id) # Ensure clean state
@@ -196,7 +198,9 @@ class MainWindow(QMainWindow):
             btn = getattr(self.control_panel, f"cam_{cid.lower()}_toggle_btn")
             btn.setChecked(False)
             btn.setText(f"Start Camera {cid}")
-            btn.setStyleSheet("background-color: #007acc;")
+            btn.setProperty("active", False)
+            btn.style().unpolish(btn)
+            btn.style().polish(btn)
             
         grabber.error.connect(handle_error)
         

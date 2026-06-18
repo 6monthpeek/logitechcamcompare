@@ -1,7 +1,7 @@
 import cv2
 import datetime
 from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
-from PySide6.QtGui import QImage, QPixmap, QPainter, QColor, QFont
+from PySide6.QtGui import QImage, QPixmap, QPainter, QColor, QFont, QPen
 from PySide6.QtCore import Qt, Slot, QPoint
 
 class CameraWidget(QWidget):
@@ -22,11 +22,12 @@ class CameraWidget(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
         
         self.placeholder_label = QLabel(f"{self.title}\n(Camera Offline)")
+        self.placeholder_label.setObjectName("placeholder_label")
         self.placeholder_label.setAlignment(Qt.AlignCenter)
-        self.placeholder_label.setStyleSheet("background-color: #1e1e24; color: #888888; font-size: 14px; border: 2px dashed #444;")
         self.placeholder_label.setAttribute(Qt.WA_TransparentForMouseEvents, True)
         
         self.video_label = QLabel()
+        self.video_label.setObjectName("video_label")
         self.video_label.setAlignment(Qt.AlignCenter)
         self.video_label.setVisible(False)
         self.video_label.setAttribute(Qt.WA_TransparentForMouseEvents, True)
@@ -345,13 +346,17 @@ class CameraWidget(QWidget):
             pos_x = 10
             pos_y = 10
             
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(QColor(0, 0, 0, 153))
+            pen = QPen(QColor(0, 240, 255), 1)
+            painter.setPen(pen)
+            painter.setBrush(QColor(18, 18, 20, 204))
             painter.drawRoundedRect(pos_x, pos_y, box_w, box_h, 5, 5)
             
-            painter.setPen(QColor(255, 255, 255))
             current_y = pos_y + margin_y + metrics.ascent()
-            for line in lines:
+            for idx, line in enumerate(lines):
+                if idx == 0:
+                    painter.setPen(QColor(0, 240, 255))
+                else:
+                    painter.setPen(QColor(244, 244, 245))
                 painter.drawText(pos_x + margin_x, current_y, line)
                 current_y += line_height + line_spacing
                 
