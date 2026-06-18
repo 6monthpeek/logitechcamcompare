@@ -288,6 +288,25 @@ class CameraWidget(QWidget):
                 beta=(self.brightness_val - 50.0) * 2.0
             )
             
+            # Performance Optimization: Downscale the frame using OpenCV (C++) BEFORE
+            # converting to QImage/QPixmap to avoid heavy memory copies and CPU-to-GPU bandwidth bottlenecks.
+            widget_w = self.width()
+            widget_h = self.height()
+            if widget_w > 0 and widget_h > 0:
+                h_current, w_current = frame.shape[:2]
+                aspect_ratio = w_current / h_current
+                widget_ratio = widget_w / widget_h
+                if widget_ratio > aspect_ratio:
+                    target_h = widget_h
+                    target_w = int(widget_h * aspect_ratio)
+                else:
+                    target_w = widget_w
+                    target_h = int(widget_w / aspect_ratio)
+                
+                target_w = max(1, target_w)
+                target_h = max(1, target_h)
+                frame = cv2.resize(frame, (target_w, target_h), interpolation=cv2.INTER_LINEAR)
+            
             # Convert BGR to RGB
             rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             h, w, ch = rgb_image.shape
@@ -296,13 +315,8 @@ class CameraWidget(QWidget):
             # Create QImage and copy to be safe with memory
             q_image = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888).copy()
             
-            # Create QPixmap and scale it to fit the widget size keeping aspect ratio
-            pixmap = QPixmap.fromImage(q_image)
-            scaled_pixmap = pixmap.scaled(
-                self.size(),
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation
-            )
+            # Create QPixmap directly from the sized image (no further scaling needed)
+            scaled_pixmap = QPixmap.fromImage(q_image)
             
             # Render overlays using QPainter
             painter = QPainter(scaled_pixmap)
