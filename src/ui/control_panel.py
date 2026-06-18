@@ -500,7 +500,9 @@ class ControlPanel(QWidget):
                 group.style().unpolish(group)
                 group.style().polish(group)
 
-    def show_add_source_menu(self):
+    def show_add_source_menu(self, target_widget=None):
+        if target_widget is None or isinstance(target_widget, bool):
+            target_widget = self.add_source_btn
         menu = QMenu(self)
         
         active_indices = []
@@ -527,7 +529,7 @@ class ControlPanel(QWidget):
                     return lambda: self.add_new_camera(d["index"])
                 action.triggered.connect(make_trigger_slot(dev))
                 
-        menu.exec(self.add_source_btn.mapToGlobal(QPoint(0, self.add_source_btn.height())))
+        menu.exec(target_widget.mapToGlobal(QPoint(0, target_widget.height())))
 
     def add_new_camera(self, device_idx):
         target_slot = None
