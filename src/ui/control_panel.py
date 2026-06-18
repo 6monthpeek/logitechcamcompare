@@ -472,10 +472,10 @@ class ControlPanel(QWidget):
         selected_text = selected_items[0].text() if selected_items else None
         
         self.sources_list.clear()
-        for cam_id in ["A", "B"]:
-            config = configs.get(f"Camera {cam_id}")
-            if config and config.get("device_idx", -1) != -1:
-                self.sources_list.addItem(f"Camera {cam_id}")
+        for display_name in sorted(configs.keys()):
+            config = configs[display_name]
+            if config and config.get("running", False):
+                self.sources_list.addItem(display_name)
                 
         # Restore selection
         if selected_text:
