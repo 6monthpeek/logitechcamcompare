@@ -35,7 +35,9 @@ class CameraManager:
         for index in range(10):
             try:
                 if platform.system() == "Windows":
-                    cap = cv2.VideoCapture(index, cv2.CAP_DSHOW)
+                    cap = cv2.VideoCapture(index, cv2.CAP_MSMF)
+                    if not cap.isOpened():
+                        cap = cv2.VideoCapture(index, cv2.CAP_DSHOW)
                 else:
                     cap = cv2.VideoCapture(index)
             except TypeError:
@@ -80,7 +82,9 @@ class CameraManager:
         try:
             try:
                 if platform.system() == "Windows":
-                    cap = cv2.VideoCapture(device_index, cv2.CAP_DSHOW)
+                    cap = cv2.VideoCapture(device_index, cv2.CAP_MSMF)
+                    if not cap.isOpened():
+                        cap = cv2.VideoCapture(device_index, cv2.CAP_DSHOW)
                 else:
                     cap = cv2.VideoCapture(device_index)
             except TypeError:
