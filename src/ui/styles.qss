@@ -46,28 +46,66 @@ CameraWidget:hover {
 
 /* Sources List styling */
 ControlPanel QListWidget {
-    background-color: #202023;
-    border: 1px solid #2d2d30;
+    background-color: #09090b;
+    border: 1px solid #27272a;
     border-radius: 6px;
     padding: 4px;
     color: #f4f4f5;
 }
 
 ControlPanel QListWidget::item {
-    padding: 6px;
+    padding: 8px 10px;
     border-radius: 4px;
     color: #a1a1aa;
+    margin-bottom: 2px;
 }
 
 ControlPanel QListWidget::item:hover {
-    background-color: #2d2d30;
+    background-color: #18181b;
     color: #f4f4f5;
 }
 
 ControlPanel QListWidget::item:selected {
-    background-color: #00f0ff;
-    color: #121214;
+    background-color: #14b8a6;
+    color: #09090b;
     font-weight: bold;
+}
+
+/* Scrollbar styling */
+QScrollBar:vertical {
+    border: none;
+    background: #09090b;
+    width: 6px;
+    margin: 0px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:vertical {
+    background: #27272a;
+    min-height: 20px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #14b8a6;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    border: none;
+    background: none;
+    height: 0px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+/* Form Layout labels styling */
+ControlPanel QFormLayout QLabel {
+    font-size: 10px;
+    font-weight: 700;
+    color: #a1a1aa;
+    text-transform: uppercase;
 }
 
 CameraWidget QLabel#placeholder_label {

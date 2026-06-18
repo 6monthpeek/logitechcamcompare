@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, 
                               QFormLayout, QComboBox, QPushButton, QLabel, QSpinBox,
-                              QCheckBox, QSlider, QListWidget, QMenu, QScrollArea)
+                              QCheckBox, QSlider, QListWidget, QMenu, QScrollArea, QFrame)
 from PySide6.QtCore import Signal, Slot, Qt, QPoint
 
 class ControlPanel(QWidget):
@@ -36,6 +36,42 @@ class ControlPanel(QWidget):
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(5, 5, 5, 5)
         self.main_layout.setSpacing(5)
+        
+        # Header Widget (Branding)
+        header_widget = QWidget()
+        header_layout = QVBoxLayout(header_widget)
+        header_layout.setContentsMargins(10, 10, 10, 5)
+        header_layout.setSpacing(4)
+        
+        title_label = QLabel("CAMCOMPARE")
+        title_label.setStyleSheet("""
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 2px;
+        """)
+        
+        subtitle_label = QLabel("DUAL WEBCAM ANALYZER")
+        subtitle_label.setStyleSheet("""
+            font-family: 'Inter', sans-serif;
+            font-size: 9px;
+            color: #14b8a6;
+            font-weight: 700;
+            letter-spacing: 1px;
+        """)
+        
+        header_layout.addWidget(title_label)
+        header_layout.addWidget(subtitle_label)
+        
+        # Separator line
+        separator = QFrame()
+        separator.setFrameShape(QFrame.HLine)
+        separator.setFrameShadow(QFrame.Sunken)
+        separator.setStyleSheet("background-color: #27272a; max-height: 1px; border: none;")
+        header_layout.addWidget(separator)
+        
+        self.main_layout.addWidget(header_widget)
         
         # Scroll Area for a premium scrollable sidebar layout
         self.scroll_area = QScrollArea()
