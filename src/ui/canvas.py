@@ -4,80 +4,118 @@ from src.ui.camera_widget import CameraWidget
 
 class SceneCanvas(QWidget):
     """
-    Main canvas viewport area where the dual camera feeds are displayed.
+    Main canvas viewport area where the camera feeds are displayed.
     Supports presets: Side-by-Side, Stacked, and Picture-in-Picture (PiP).
     """
     def __init__(self, parent=None):
         super().__init__(parent)
         
-        # Dual camera widgets
+        # Camera widgets
         self.camera_a = CameraWidget(title="Camera A", parent=self)
         self.camera_b = CameraWidget(title="Camera B", parent=self)
+        self.camera_widgets = [self.camera_a, self.camera_b]
+        self.selected_camera = None
         
         # Default layout is Side-by-Side
         self.current_preset = "side-by-side"
         self.layout_customized = False
         self.setup_layout()
         
+    def select_camera(self, widget):
+        if widget not in self.camera_widgets:
+            return
+        self.selected_camera = widget
+        for w in self.camera_widgets:
+            w.set_selected(w == widget)
+        # Notify MainWindow
+        parent = self.parent()
+        if parent and hasattr(parent, "on_camera_selected"):
+            parent.on_camera_selected(widget)
+            
+    def add_camera_widget(self, widget):
+        if widget not in self.camera_widgets:
+            self.camera_widgets.append(widget)
+            widget.setParent(self)
+            self.setup_layout()
+            
+    def remove_camera_widget(self, widget):
+        if widget in self.camera_widgets:
+            self.camera_widgets.remove(widget)
+            widget.setParent(None)
+            widget.deleteLater()
+            if self.selected_camera == widget:
+                self.selected_camera = None
+                parent = self.parent()
+                if parent and hasattr(parent, "on_camera_selected"):
+                    parent.on_camera_selected(None)
+            self.setup_layout()
+        
     def setup_layout(self):
         # Clear existing layout
         if self.layout() is not None:
             old_layout = self.layout()
-            old_layout.removeWidget(self.camera_a)
-            old_layout.removeWidget(self.camera_b)
-            # Re-parent to self just in case they were unparented
-            self.camera_a.setParent(self)
-            self.camera_b.setParent(self)
-            # Safely delete the old layout
+            for widget in self.camera_widgets:
+                old_layout.removeWidget(widget)
+                widget.setParent(self)
             QWidget().setLayout(old_layout) 
+            
+        # Determine active widgets (running grabbers)
+        active_widgets = [w for w in self.camera_widgets if w.grabber is not None]
+        if not active_widgets:
+            # If none are active, show all as offline placeholders
+            active_widgets = self.camera_widgets
+            
+        # Hide inactive ones, show active ones
+        for w in self.camera_widgets:
+            if w in active_widgets:
+                w.show()
+            else:
+                w.hide()
             
         if self.current_preset == "side-by-side":
             layout = QHBoxLayout(self)
             layout.setContentsMargins(10, 10, 10, 10)
             layout.setSpacing(10)
-            layout.addWidget(self.camera_a)
-            layout.addWidget(self.camera_b)
-            self.camera_b.show()
+            for w in active_widgets:
+                layout.addWidget(w)
             
         elif self.current_preset == "stacked":
             layout = QVBoxLayout(self)
             layout.setContentsMargins(10, 10, 10, 10)
             layout.setSpacing(10)
-            layout.addWidget(self.camera_a)
-            layout.addWidget(self.camera_b)
-            self.camera_b.show()
+            for w in active_widgets:
+                layout.addWidget(w)
             
         elif self.current_preset == "pip":
-            # Camera A is full size (layout-managed), Camera B is floating
             layout = QHBoxLayout(self)
             layout.setContentsMargins(0, 0, 0, 0)
-            layout.addWidget(self.camera_a)
-            
-            # Position Camera B floatingly
-            self.camera_b.setParent(self)
-            self.camera_b.raise_()
-            self.update_pip_geometry()
+            if active_widgets:
+                layout.addWidget(active_widgets[0])
+                if len(active_widgets) > 1:
+                    # Floating remaining active widgets
+                    for i, w in enumerate(active_widgets[1:]):
+                        w.setParent(self)
+                        w.raise_()
+                    self.update_pip_geometry()
             
         self.update()
 
     def on_interactive_layout_start(self):
         if not self.layout_customized:
-            # Snapshot geometries
-            geom_a = self.camera_a.geometry()
-            geom_b = self.camera_b.geometry()
+            # Snapshot geometries for all camera widgets
+            geometries = {w: w.geometry() for w in self.camera_widgets}
             
             # Disable/remove/delete the active layout manager
             if self.layout() is not None:
                 old_layout = self.layout()
-                old_layout.removeWidget(self.camera_a)
-                old_layout.removeWidget(self.camera_b)
-                self.camera_a.setParent(self)
-                self.camera_b.setParent(self)
+                for w in self.camera_widgets:
+                    old_layout.removeWidget(w)
+                    w.setParent(self)
                 QWidget().setLayout(old_layout)
             
-            # Re-apply the geometries using absolute coordinates
-            self.camera_a.setGeometry(geom_a)
-            self.camera_b.setGeometry(geom_b)
+            # Re-apply geometries absolutely
+            for w, geom in geometries.items():
+                w.setGeometry(geom)
             
             self.layout_customized = True
 
@@ -102,22 +140,30 @@ class SceneCanvas(QWidget):
 
     def update_pip_geometry(self):
         if self.current_preset == "pip":
-            # Position Camera B in the bottom-right corner, 1/4 of size
-            w = max(160, self.width() // 4)
-            h = max(120, self.height() // 4)
-            x = self.width() - w - 15
-            y = self.height() - h - 15
-            x = max(0, min(x, self.width() - w))
-            y = max(0, min(y, self.height() - h))
-            self.camera_b.setGeometry(x, y, w, h)
-            self.camera_b.show()
+            active_widgets = [w for w in self.camera_widgets if w.grabber is not None]
+            if not active_widgets:
+                active_widgets = self.camera_widgets
+            if len(active_widgets) > 1:
+                w = max(160, self.width() // 4)
+                h = max(120, self.height() // 4)
+                # Clamp to canvas dimensions to prevent overflowing microscopic viewports
+                w = min(w, self.width())
+                h = min(h, self.height())
+                for i, camera in enumerate(active_widgets[1:]):
+                    offset = i * 20
+                    x = self.width() - w - 15 - offset
+                    y = self.height() - h - 15 - offset
+                    x = max(0, min(x, self.width() - w))
+                    y = max(0, min(y, self.height() - h))
+                    camera.setGeometry(x, y, w, h)
+                    camera.show()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
         if self.layout_customized:
             parent_w = self.width()
             parent_h = self.height()
-            for camera in [self.camera_a, self.camera_b]:
+            for camera in self.camera_widgets:
                 geom = camera.geometry()
                 x, y, w, h = geom.x(), geom.y(), geom.width(), geom.height()
                 w = max(100, w)

@@ -32,8 +32,42 @@ CameraWidget {
     border-radius: 8px;
 }
 
-CameraWidget:hover, CameraWidget:focus {
+CameraWidget[selected="true"] {
     border: 2px solid #00f0ff;
+}
+
+CameraWidget[selected="false"] {
+    border: 2px solid #2d2d30;
+}
+
+CameraWidget:hover {
+    border: 2px solid #00f0ff;
+}
+
+/* Sources List styling */
+ControlPanel QListWidget {
+    background-color: #202023;
+    border: 1px solid #2d2d30;
+    border-radius: 6px;
+    padding: 4px;
+    color: #f4f4f5;
+}
+
+ControlPanel QListWidget::item {
+    padding: 6px;
+    border-radius: 4px;
+    color: #a1a1aa;
+}
+
+ControlPanel QListWidget::item:hover {
+    background-color: #2d2d30;
+    color: #f4f4f5;
+}
+
+ControlPanel QListWidget::item:selected {
+    background-color: #00f0ff;
+    color: #121214;
+    font-weight: bold;
 }
 
 CameraWidget QLabel#placeholder_label {
@@ -45,9 +79,9 @@ CameraWidget QLabel#placeholder_label {
 }
 
 ControlPanel {
-    background-color: #18181b;
+    background-color: #09090b;
     color: #f4f4f5;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
 }
 
 ControlPanel QLabel {
@@ -55,19 +89,23 @@ ControlPanel QLabel {
 }
 
 ControlPanel QGroupBox {
-    border: 1px solid #2d2d30;
+    border: 1px solid #27272a;
     border-radius: 8px;
-    margin-top: 12px;
+    margin-top: 8px;
     font-weight: bold;
     color: #f4f4f5;
-    padding-top: 12px;
+    padding-top: 14px;
     background-color: #18181b;
+}
+
+ControlPanel QGroupBox[selected="true"] {
+    border: 1px solid #14b8a6;
 }
 
 ControlPanel QGroupBox::title {
     subcontrol-origin: margin;
     left: 10px;
-    padding: 0 3px 0 3px;
+    padding: 0 4px 0 4px;
     color: #f4f4f5;
 }
 
@@ -75,13 +113,13 @@ ControlPanel QComboBox, ControlPanel QSpinBox {
     background-color: #202023;
     border: 1px solid #2d2d30;
     border-radius: 4px;
-    padding: 4px;
+    padding: 5px;
     color: #f4f4f5;
 }
 
 ControlPanel QComboBox:hover, ControlPanel QComboBox:focus,
 ControlPanel QSpinBox:hover, ControlPanel QSpinBox:focus {
-    border: 1px solid #00f0ff;
+    border: 1px solid #14b8a6;
 }
 
 ControlPanel QComboBox::drop-down {
@@ -98,12 +136,12 @@ ControlPanel QPushButton {
 }
 
 ControlPanel QPushButton:hover {
-    border-color: #00f0ff;
-    color: #00f0ff;
+    border-color: #14b8a6;
+    color: #14b8a6;
 }
 
 ControlPanel QPushButton:pressed {
-    background-color: #2d2d30;
+    background-color: #27272a;
 }
 
 /* Dynamic property for checkable camera toggle buttons */
@@ -120,12 +158,12 @@ ControlPanel QPushButton[active="true"]:hover {
 
 ControlPanel QPushButton[active="false"] {
     background-color: #202023;
-    color: #00f0ff;
-    border: 1px solid #00f0ff;
+    color: #14b8a6;
+    border: 1px solid #14b8a6;
 }
 
 ControlPanel QPushButton[active="false"]:hover {
-    background-color: #00f0ff;
+    background-color: #14b8a6;
     color: #121214;
 }
 
@@ -146,12 +184,12 @@ ControlPanel QCheckBox::indicator {
 }
 
 ControlPanel QCheckBox::indicator:hover {
-    border-color: #00f0ff;
+    border-color: #14b8a6;
 }
 
 ControlPanel QCheckBox::indicator:checked {
-    background-color: #00f0ff;
-    border-color: #00f0ff;
+    background-color: #14b8a6;
+    border-color: #14b8a6;
 }
 
 /* Slider styling */
@@ -163,7 +201,7 @@ ControlPanel QSlider::groove:horizontal {
 }
 
 ControlPanel QSlider::sub-page:horizontal {
-    background: #8b5cf6;
+    background: #14b8a6;
     border-radius: 3px;
 }
 
@@ -177,6 +215,6 @@ ControlPanel QSlider::handle:horizontal {
 }
 
 ControlPanel QSlider::handle:horizontal:hover {
-    background: #00f0ff;
-    border-color: #00f0ff;
+    background: #14b8a6;
+    border-color: #14b8a6;
 }

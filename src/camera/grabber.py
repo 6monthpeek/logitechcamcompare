@@ -106,6 +106,10 @@ class CameraGrabber(QThread):
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
         self.cap.set(cv2.CAP_PROP_FPS, self.fps)
+        try:
+            self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        except Exception:
+            pass
         
         # Initialize diagnostics
         self.active_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH) or self.width)

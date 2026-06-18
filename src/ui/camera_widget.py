@@ -41,12 +41,20 @@ class CameraWidget(QWidget):
         self.zoom_val = 1.0
         self.pan_offset = QPoint(0, 0)
         self.is_panning = False
+        self.selected = False
+        self.setProperty("selected", False)
         
         # Interaction attributes
         self.setMouseTracking(True)
         self.interaction_direction = None
         self.drag_start_pos = None
         self.drag_start_geometry = None
+        
+    def set_selected(self, selected):
+        self.selected = selected
+        self.setProperty("selected", selected)
+        self.style().unpolish(self)
+        self.style().polish(self)
 
     def get_interaction_info(self, pos):
         x, y = pos.x(), pos.y()
@@ -108,6 +116,11 @@ class CameraWidget(QWidget):
             local_pos = event.position().toPoint()
             direction, cursor_shape = self.get_interaction_info(local_pos)
             
+            # Trigger selection
+            parent = self.parent()
+            if parent and hasattr(parent, "select_camera"):
+                parent.select_camera(self)
+                
             if self.zoom_val > 1.0 and direction == "drag":
                 self.is_panning = True
                 self.pan_start_pos = event.position()
@@ -126,7 +139,6 @@ class CameraWidget(QWidget):
             else:
                 self.setCursor(cursor_shape)
                 
-            parent = self.parent()
             if parent and hasattr(parent, "on_interactive_layout_start"):
                 parent.on_interactive_layout_start()
                 
@@ -281,15 +293,8 @@ class CameraWidget(QWidget):
                 if x_end > x_start and y_end > y_start:
                     frame = frame[y_start:y_end, x_start:x_end]
             
-            # Adjust brightness and contrast
-            frame = cv2.convertScaleAbs(
-                frame, 
-                alpha=self.contrast_val / 50.0, 
-                beta=(self.brightness_val - 50.0) * 2.0
-            )
-            
             # Performance Optimization: Downscale the frame using OpenCV (C++) BEFORE
-            # converting to QImage/QPixmap to avoid heavy memory copies and CPU-to-GPU bandwidth bottlenecks.
+            # doing heavy pixel operations or converting to QImage/QPixmap to avoid CPU bottlenecks.
             widget_w = self.width()
             widget_h = self.height()
             if widget_w > 0 and widget_h > 0:
@@ -306,6 +311,13 @@ class CameraWidget(QWidget):
                 target_w = max(1, target_w)
                 target_h = max(1, target_h)
                 frame = cv2.resize(frame, (target_w, target_h), interpolation=cv2.INTER_LINEAR)
+
+            # Adjust brightness and contrast on the already downscaled frame (massive CPU saving)
+            frame = cv2.convertScaleAbs(
+                frame, 
+                alpha=self.contrast_val / 50.0, 
+                beta=(self.brightness_val - 50.0) * 2.0
+            )
             
             # Convert BGR to RGB
             rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
