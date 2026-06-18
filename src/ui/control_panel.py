@@ -26,6 +26,7 @@ class ControlPanel(QWidget):
         self.slider_contrast_b = None
         self.slider_zoom_a = None
         self.slider_zoom_b = None
+        self.devices_data = []
         self.setMaximumWidth(320)
 
         # Main Layout
@@ -154,7 +155,7 @@ class ControlPanel(QWidget):
         setattr(self, f"slider_zoom_{cam_id.lower()}", slider_zoom)
         
         # Connect change signals
-        dev_combo.currentIndexChanged.connect(lambda: self.on_settings_modified(cam_id))
+        dev_combo.currentIndexChanged.connect(lambda _, cid=cam_id: self.on_device_changed(cid))
         res_combo.currentIndexChanged.connect(lambda: self.on_settings_modified(cam_id))
         fps_spin.valueChanged.connect(lambda: self.on_settings_modified(cam_id))
         
@@ -218,12 +219,14 @@ class ControlPanel(QWidget):
     def populate_devices(self, devices):
         """
         Populates the device dropdowns with available devices.
-        devices: list of dicts: [{'index': int, 'name': str, 'id': str}]
+        devices: list of dicts: [{'index': int, 'name': str, 'id': str, 'supported_resolutions': list}]
         """
+        self.devices_data = devices
         for cam_id in ["a", "b"]:
             combo = getattr(self, f"cam_{cam_id}_dev_combo")
             current_idx = combo.currentData()
             
+            combo.blockSignals(True)
             combo.clear()
             combo.addItem("None", -1)
             
@@ -239,4 +242,62 @@ class ControlPanel(QWidget):
                     break
             if not found:
                 combo.setCurrentIndex(0)
+            combo.blockSignals(False)
+            
+            self.update_resolution_dropdown(cam_id.upper())
+
+    def on_device_changed(self, cam_id):
+        self.update_resolution_dropdown(cam_id)
+        self.on_settings_modified(cam_id)
+
+    def update_resolution_dropdown(self, cam_id):
+        dev_combo = getattr(self, f"cam_{cam_id.lower()}_dev_combo")
+        res_combo = getattr(self, f"cam_{cam_id.lower()}_res_combo")
+        
+        device_idx = dev_combo.currentData()
+        
+        device_info = None
+        for dev in self.devices_data:
+            if dev.get("index") == device_idx:
+                device_info = dev
+                break
+                
+        current_res = res_combo.currentData()
+        
+        res_combo.blockSignals(True)
+        res_combo.clear()
+        
+        supported = []
+        if device_info and "supported_resolutions" in device_info:
+            supported = device_info["supported_resolutions"]
+            
+        if not supported or device_idx == -1:
+            # Fallback standard resolutions
+            supported = [(640, 480), (1280, 720), (1920, 1080), (2560, 1440), (3840, 2160)]
+            
+        for w, h in supported:
+            label = f"{w} x {h}"
+            if (w, h) == (1920, 1080):
+                label += " (1080p)"
+            elif (w, h) == (2560, 1440):
+                label += " (2K)"
+            elif (w, h) == (3840, 2160):
+                label += " (4K)"
+            elif (w, h) == (1280, 720):
+                label += " (720p)"
+            elif (w, h) == (640, 480):
+                label += " (480p)"
+            res_combo.addItem(label, (w, h))
+            
+        # Try to restore selection
+        found = False
+        for idx in range(res_combo.count()):
+            if res_combo.itemData(idx) == current_res:
+                res_combo.setCurrentIndex(idx)
+                found = True
+                break
+        if not found and res_combo.count() > 0:
+            res_combo.setCurrentIndex(res_combo.count() - 1)
+            
+        res_combo.blockSignals(False)
 

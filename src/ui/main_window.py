@@ -16,7 +16,8 @@ class CameraDiscoveryWorker(QThread):
                 result.append({
                     "index": dev["index"],
                     "name": dev["name"],
-                    "id": str(dev["index"])
+                    "id": str(dev["index"]),
+                    "supported_resolutions": dev.get("supported_resolutions", [])
                 })
             self.finished.emit(result)
         except Exception:
@@ -95,10 +96,12 @@ class MainWindow(QMainWindow):
             if video_inputs:
                 devices = []
                 for i, device in enumerate(video_inputs):
+                    caps = CameraManager.check_capabilities(i)
                     devices.append({
                         "index": i,
                         "name": device.description() or f"Camera {i}",
-                        "id": str(i)
+                        "id": str(i),
+                        "supported_resolutions": caps["resolutions"]
                     })
                 self.control_panel.populate_devices(devices)
                 return
