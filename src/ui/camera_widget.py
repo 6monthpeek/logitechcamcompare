@@ -121,6 +121,10 @@ class CameraWidget(QWidget):
             
             device_ratio = self.devicePixelRatioF()
             
+            self._last_pushed_w = widget_w
+            self._last_pushed_h = widget_h
+            self._last_pushed_ratio = device_ratio
+            
             self.grabber.update_render_settings(
                 target_w=avail_w,
                 target_h=avail_h,
@@ -449,3 +453,14 @@ class CameraWidget(QWidget):
         """
         super().resizeEvent(event)
         self.push_settings_to_grabber()
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        if self.grabber is not None:
+            current_ratio = self.devicePixelRatioF()
+            if (
+                getattr(self, "_last_pushed_w", 0) != self.width() or
+                getattr(self, "_last_pushed_h", 0) != self.height() or
+                getattr(self, "_last_pushed_ratio", 0.0) != current_ratio
+            ):
+                self.push_settings_to_grabber()
